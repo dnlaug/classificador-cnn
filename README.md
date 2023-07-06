@@ -37,7 +37,7 @@ Este projeto implementa um main de imagens usando uma rede neural convolucional 
 
 1. Clone o repositório do projeto:
 
-``` git clone https://github.com/dnlaug/main-cnn.git ```
+``` git clone https://github.com/dnlaug/classificador-cnn.git ```
 
 2. Instale as dependências necessárias através do:
 
@@ -47,14 +47,14 @@ ou
 
 ``` pip install tqdm numpy torch torchvision matplotlib scikit-learn ```
 
-4. Caso for usar a GPU, mude o seguinte trecho do código:
-``` device = torch.device("cpu" if torch.cuda.is_available() else "cpu") ``` 
+4. Caso for usar somente a CPU, mude o seguinte trecho do código:
+``` device = torch.device("cuda" if torch.cuda.is_available() else "cpu") ``` 
 
 para
 
- ``` device = torch.device("cuda" if torch.cuda.is_available() else "cpu") ```
+ ``` device = torch.device("cpu" if torch.cuda.is_available() else "cpu") ```
 
-5. Instale o PyTorch 2.0 (habilitar a GPU)
+5. Instale o PyTorch 2.0 (habilita GPU)
 ``` pip install torch==2.0.0+cu118 torchvision==0.15.1+cu118 torchaudio==2.0.1 --index-url https://download.pytorch.org/whl/cu118 ```
 
 6. Após a instalação execute o arquivo `main.py` para rodar o projeto:
@@ -72,7 +72,7 @@ Para utilizar o programa, siga as seguintes instruções:
 
 3. Execute o arquivo `main.py`.
 
-4. O projeto fará o download automatico do cojunto de dados durante a execução (pasta `data` encontrada na raiz do projeto), portanto, não é necessário baixa-lo manualmente. Importante possuir uma conexão com a internet para que o download seja realizado corretamente.
+4. O projeto fará o download automatico do cojunto de dados durante a execução (pasta `\data` encontrada na raiz do projeto), portanto, não é necessário baixa-lo manualmente. Importante possuir uma conexão com a internet para que o download seja realizado corretamente.
 
 5. Aguarde o carregamento do dataset CIFAR-10, do pré-processamento dos dados e definição do modelo CNN com a arquitetura ResNet-18.
 
