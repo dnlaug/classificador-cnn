@@ -1,6 +1,6 @@
 # Classificação de Imagens usando modelo CNN e Arquitetura ResNet-18
 
-Este projeto tem como objetivo desenvolver um main de imagens usando redes neurais convolucionais (CNN) para o reconhecimento de objetos, usando a arquitetura ResNet-18 aplicada ao conjunto de dados [_CIFAR-10_](https://www.cs.toronto.edu/~kriz/cifar.html), 
+Este projeto tem como objetivo desenvolver um classificador de imagens usando redes neurais convolucionais (CNN) para o reconhecimento de objetos, usando a arquitetura ResNet-18 aplicada ao conjunto de dados [_CIFAR-10_](https://www.cs.toronto.edu/~kriz/cifar.html), 
 sendo treinado usando o otimizador Adam no conjunto de treinamento e avaliado no conjunto de teste.
 
 ## Conjunto de dados
@@ -14,12 +14,12 @@ Avião (Airplane); Automóvel (Automobile); Pássaro (Bird); Gato (Cat); Cervo (
 
 # Descrição
 
-Este projeto implementa um main de imagens usando uma rede neural convolucional (CNN) utilizando a arquitetura ResNet-18. O modelo usa o dataset [_CIFAR-10_](https://www.cs.toronto.edu/~kriz/cifar.html) para reconhecer e classificar as imagens em uma das 10 classes. O objetivo é alcançar uma alta acurácia na classificação das imagens.
+Este projeto implementa um classificador de imagens usando uma rede neural convolucional (CNN) utilizando a arquitetura ResNet-18. O modelo usa o dataset [_CIFAR-10_](https://www.cs.toronto.edu/~kriz/cifar.html) para reconhecer e classificar as imagens em uma das 10 classes. O objetivo é alcançar uma alta acurácia na classificação das imagens.
 
 ## Classificador e Acurácia
 
 - Foi utilizado um modelo de CNN com a arquitetura ResNet-18 treinado no conjunto de dados CIFAR-10. 
-- A arquitetura pré-treinada ResNet-18 possui camadas convolucionais e de pooling para extração de características e uma camada fully connected para a classificação. 
+- A arquitetura pré-treinada ResNet-18 possui camadas convolucionais e de _pooling_ para extração de características e uma camada _fully connected_ para a classificação. 
 - A acurácia no conjunto de teste é calculada após cada época. 
 - Quanto maior a acurácia, melhor é o desempenho do modelo em classificar corretamente as imagens do conjunto de teste.
 - O modelo treinado obteve uma acurácia de aproximadamente _85%_ na classificação das imagens do conjunto de dados.
