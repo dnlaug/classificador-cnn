@@ -48,6 +48,7 @@ ou
 ``` pip install tqdm numpy torch torchvision matplotlib scikit-learn ```
 
 4. Caso for usar somente a CPU, mude o seguinte trecho do código:
+
 ``` device = torch.device("cuda" if torch.cuda.is_available() else "cpu") ``` 
 
 para
@@ -55,9 +56,11 @@ para
  ``` device = torch.device("cpu" if torch.cuda.is_available() else "cpu") ```
 
 5. Instale o PyTorch 2.0 (habilita GPU)
+
 ``` pip install torch==2.0.0+cu118 torchvision==0.15.1+cu118 torchaudio==2.0.1 --index-url https://download.pytorch.org/whl/cu118 ```
 
 6. Após a instalação execute o arquivo `main.py` para rodar o projeto:
+
 ``` python main.py ```
 
 O programa irá realizar o download do dataset na pasta `\data` na raiz do projeto, pré-processará esses dados, define o modelo CNN com a arquitetura ResNet-18, treinará o modelo e avalia sua acurácia. Os resultados serão exibidos no console e a matriz de confusão será plotada ao final da execução.
