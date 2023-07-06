@@ -118,7 +118,7 @@ O uso da GPU no projeto é uma uma maneira eficaz de acelerar o treinamento do m
 
 ## Link para repositório
 
-[GitHub - dnlaug/classificador-cnn] (`https://github.com/dnlaug/classificador-cnn`)
+[GitHub - dnlaug/classificador-cnn](https://github.com/dnlaug/classificador-cnn)
 
 ## Referências
 
