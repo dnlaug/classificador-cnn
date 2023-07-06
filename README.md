@@ -1,4 +1,4 @@
-# Classificação de Imagens usando modelo CNN e arquiteura ResNet-18
+# Classificação de Imagens usando modelo CNN e Arquitetura ResNet-18
 
 Este projeto tem como objetivo desenvolver um main de imagens usando redes neurais convolucionais (CNN) para o reconhecimento de objetos, usando a arquitetura ResNet-18 aplicada ao conjunto de dados [_CIFAR-10_](https://www.cs.toronto.edu/~kriz/cifar.html), 
 sendo treinado usando o otimizador Adam no conjunto de treinamento e avaliado no conjunto de teste.
