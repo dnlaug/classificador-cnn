@@ -1,91 +1,100 @@
 import tqdm
 import itertools
 import numpy as np
-import tensorflow as tf
+import torch
+import torch.nn as nn
+import torch.optim as optim
 import matplotlib.pyplot as plt
 
-from tensorflow.keras.datasets import cifar10
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
-from tensorflow.keras.optimizers import Adam
-
+from torchvision.datasets import CIFAR10
+from torch.utils.data import DataLoader
+from torchvision.transforms import ToTensor
 from sklearn.metrics import accuracy_score, confusion_matrix
+from torchvision import models
 
-# Função personalizada para carregar o dataset CIFAR-10 com barra de progresso
-def carrega_dataset():
+import warnings
+
+# Ignora warnings
+warnings.filterwarnings("ignore")
+
+# Carrega o dataset CIFAR-10 - com barra de progresso
+def load_dataset():
     with tqdm.tqdm(total=1, desc="Carregando dataset") as pbar:
-        (x_train, y_train), (x_test, y_test) = cifar10.load_data()
+        train_dataset = CIFAR10(root='./data', train=True, transform=ToTensor(), download=True)
+        test_dataset = CIFAR10(root='./data', train=False, transform=ToTensor(), download=True)
         pbar.update(1)
-    return (x_train, y_train), (x_test, y_test)
+    return train_dataset, test_dataset
 
-# Função para pré-processar os dados
-def preprocess_dados(x_train, x_test):
-    x_train = x_train / 255.0
-    x_test = x_test / 255.0
-    return x_train, x_test
-
-# Função para definir o modelo CNN com regularização L2 e dropout
-def define_modelo():
-    model = Sequential()
-    model.add(Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=(32, 32, 3), kernel_regularizer=tf.keras.regularizers.l2(0.001)))
-    model.add(BatchNormalization())
-    model.add(Conv2D(32, (3, 3), activation='relu', padding='same', kernel_regularizer=tf.keras.regularizers.l2(0.001)))
-    model.add(BatchNormalization())
-    model.add(MaxPooling2D((2, 2)))
-    model.add(Dropout(0.25))
-
-    model.add(Conv2D(64, (3, 3), activation='relu', padding='same', kernel_regularizer=tf.keras.regularizers.l2(0.001)))
-    model.add(BatchNormalization())
-    model.add(Conv2D(64, (3, 3), activation='relu', padding='same', kernel_regularizer=tf.keras.regularizers.l2(0.001)))
-    model.add(BatchNormalization())
-    model.add(MaxPooling2D((2, 2)))
-    model.add(Dropout(0.25))
-
-    model.add(Flatten())
-    model.add(Dense(128, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.001)))
-    model.add(BatchNormalization())
-    model.add(Dropout(0.5))
-    model.add(Dense(10, activation='softmax'))
+# Define o modelo CNN
+def Model():
+    model = models.resnet18(pretrained=True)
+    model.fc = nn.Linear(512, 10)  # Altera a camada fully connected para o número de classes
     return model
 
-# Função para treinar o modelo
-def treina_modelo(model, x_train, y_train, x_test, y_test):
-    model.compile(optimizer=Adam(learning_rate=0.001),
-                  loss='sparse_categorical_crossentropy',
-                  metrics=['accuracy'])
+# Treina o modelo
+def train_model(model, train_loader, test_data, device):
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    model.to(device)
     
-    # Definir configurações de treinamento
-    batch_size = 32
-    epochs = 10
+    for epoch in range(10):  # Número de épocas = 10
+        running_loss = 0.0
+        progress_bar = tqdm.tqdm(total=len(train_loader), desc=f"Epoca {epoch+1}/{10}", unit="batch")
+        
+        for i, data in enumerate(train_loader):
+            inputs, labels = data[0].to(device), data[1].to(device)
+
+            optimizer.zero_grad()
+
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+            running_loss += loss.item()
+            progress_bar.set_postfix({"Perda": loss.item()})
+            progress_bar.update()
+        
+        progress_bar.close()
+
+        # Calcula acurácia no conjunto de teste
+        with torch.no_grad():
+            test_inputs, test_labels = torch.Tensor(test_data[0]).to(device), torch.Tensor(test_data[1]).to(device)
+            test_outputs = model(test_inputs)
+            _, predicted = torch.max(test_outputs, 1)
+            correct = (predicted == test_labels).sum().item()
+            accuracy = correct / len(test_data[1])
+            print(f"Acuracia: {accuracy:.4f}")
+
+# Avalia o modelo
+def val_model(model, test_data, device):
+    model.to(device)
     
-    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_data=(x_test, y_test))
+    with torch.no_grad():
+        test_inputs, test_labels = torch.Tensor(test_data[0]).to(device), torch.Tensor(test_data[1]).to(device)
+        test_outputs = model(test_inputs)
+        _, predicted = torch.max(test_outputs, 1)
+        accuracy = accuracy_score(test_labels.cpu(), predicted.cpu())
+        confusion_mtx = confusion_matrix(test_labels.cpu(), predicted.cpu())
+        print('Acuracia:', accuracy)
+        print('Matriz de Confusao:')
+        print(confusion_mtx)
 
-# Função para avaliar o modelo
-def avalia_modelo(model, x_test, y_test):
-    test_predictions = model.predict(x_test)
-    y_pred = tf.argmax(test_predictions, axis=1).numpy()
-    accuracy = accuracy_score(y_test, y_pred)
-    confusion_mtx = confusion_matrix(y_test, y_pred)
-    print('Accuracy:', accuracy)
-    print('Confusion Matrix:')
-    print(confusion_mtx)
-
-# Função para plotar a matriz de confusão
-def matriz_conf(confusion_mtx):
-
+# Plota matriz de confusão
+def mtx_conf(confusion_mtx):
     # Nome das classes para a matriz
-    nome_classes = ['aviao', 'automovel', 'passaro', 'gato', 'veado', 'cachorro', 'sapo', 'cavalo', 'ovelha', 'caminhao']
+    name_classes = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
     plt.figure(figsize=(8, 6))
     plt.imshow(confusion_mtx, interpolation='nearest', cmap=plt.cm.Blues)
     plt.title('Matriz de Confusão')
     plt.colorbar()
 
-    tick_marks = np.arange(len(nome_classes))
-    plt.xticks(tick_marks, nome_classes, rotation=45)
-    plt.yticks(tick_marks, nome_classes)
+    tick_marks = np.arange(len(name_classes))
+    plt.xticks(tick_marks, name_classes, rotation=45)
+    plt.yticks(tick_marks, name_classes)
     plt.xlabel('Previsto')
-    plt.ylabel('Alvo')
+    plt.ylabel('Verdadeiro')
     thresh = confusion_mtx.max() / 2.
     for i, j in itertools.product(range(confusion_mtx.shape[0]), range(confusion_mtx.shape[1])):
         plt.text(j, i, format(confusion_mtx[i, j], 'd'),
@@ -96,36 +105,39 @@ def matriz_conf(confusion_mtx):
 
 # Função main
 def main():
+    # Carrega o dataset
+    train_dataset, test_dataset = load_dataset()
 
-   # Carregar o dataset CIFAR-10
-    (x_train, y_train), (x_test, y_test) = carrega_dataset()
+    # Cria os dataloaders para treinamento e teste
+    train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+    test_data = (test_dataset.data.transpose((0, 3, 1, 2)) / 255.0, np.array(test_dataset.targets))
 
-    # Pré-processar os dados
-    x_train, x_test = preprocess_dados(x_train, x_test)
-
-    # Mostrar informações sobre os dados
-    num_train_samples = x_train.shape[0]
-    num_test_samples = x_test.shape[0]
+    # Mostra as informações sobre os dados
+    num_train_samples = len(train_dataset)
+    num_test_samples = len(test_dataset)
     print("Dados de treinamento:", num_train_samples)
     print("Dados de teste:", num_test_samples)
 
-    # Definir o modelo CNN
-    model = define_modelo()
+    # Verifica se a GPU está disponível
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Treinar o modelo
-    treina_modelo(model, x_train, y_train, x_test, y_test)
+    # Define o modelo CNN
+    model = Model()
 
-    # Avaliar o modelo
-    avalia_modelo(model, x_test, y_test)
+    # Treina o modelo
+    train_model(model, train_loader, test_data, device)
 
-    # Calcular matriz de confusão
-    test_predictions = model.predict(x_test)
-    y_pred = tf.argmax(test_predictions, axis=1).numpy()
-    confusion_mtx = confusion_matrix(y_test, y_pred)
+    # Avalia o modelo
+    val_model(model, test_data, device)
 
-    # Plotar matriz de confusão
-    matriz_conf(confusion_mtx)
+    # Calcula matriz de confusão
+    test_inputs, test_labels = torch.Tensor(test_data[0]).to(device), torch.Tensor(test_data[1]).to(device)
+    test_outputs = model(test_inputs)
+    _, predicted = torch.max(test_outputs, 1)
+    confusion_mtx = confusion_matrix(test_labels.cpu(), predicted.cpu())
+
+    # Plota matriz de confusão
+    mtx_conf(confusion_mtx)
 
 if __name__ == '__main__':
     main()
-
