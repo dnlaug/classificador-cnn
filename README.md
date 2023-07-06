@@ -16,7 +16,7 @@ Avião (Airplane); Automóvel (Automobile); Pássaro (Bird); Gato (Cat); Cervo (
 
 Este projeto implementa um main de imagens usando uma rede neural convolucional (CNN) utilizando a arquitetura ResNet-18. O modelo usa o dataset [_CIFAR-10_](https://www.cs.toronto.edu/~kriz/cifar.html) para reconhecer e classificar as imagens em uma das 10 classes. O objetivo é alcançar uma alta acurácia na classificação das imagens.
 
-## main e Acurácia
+## Classificador e Acurácia
 
 - Foi utilizado um modelo de CNN com a arquitetura ResNet-18 treinado no conjunto de dados CIFAR-10. 
 - A arquitetura pré-treinada ResNet-18 possui camadas convolucionais e de pooling para extração de características e uma camada fully connected para a classificação. 
