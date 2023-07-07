@@ -35,9 +35,13 @@ Este projeto implementa um classificador de imagens usando uma rede neural convo
 
 ## Instalação e Execução
 
-1. Clone o repositório do projeto:
+1. Clone o repositório ou faça download do projeto:
 
 ``` git clone https://github.com/dnlaug/classificador-cnn.git ```
+
+ou
+
+[classificador-cnn](https://github.com/dnlaug/classificador-cnn/archive/refs/heads/main.zip)
 
 2. Instale as dependências necessárias através do:
 
