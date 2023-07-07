@@ -28,7 +28,7 @@ def load_dataset():
 # Define o modelo CNN
 def Model():
     model = models.resnet18(pretrained=True)
-    model.fc = nn.Linear(512, 10)  # Altera a camada fully connected para o número de classes
+    model.fc = nn.Linear(512, 10)  
     return model
 
 # Treina o modelo
@@ -37,7 +37,7 @@ def train_model(model, train_loader, test_data, device):
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     model.to(device)
     
-    for epoch in range(10):  # Número de épocas = 10
+    for epoch in range(10): 
         running_loss = 0.0
         progress_bar = tqdm.tqdm(total=len(train_loader), desc=f"Epoca {epoch+1}/{10}", unit="batch")
         
@@ -85,13 +85,15 @@ def mtx_conf(confusion_mtx):
     # Nome das classes para a matriz
     name_classes = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
+    plt.style.use('dark_background')
+
     plt.figure(figsize=(8, 6))
-    plt.imshow(confusion_mtx, interpolation='nearest', cmap=plt.cm.Blues)
+    plt.imshow(confusion_mtx, interpolation='nearest', cmap=plt.cm.Greens)
     plt.title('Matriz de Confusão')
     plt.colorbar()
 
     tick_marks = np.arange(len(name_classes))
-    plt.xticks(tick_marks, name_classes, rotation=45)
+    plt.xticks(tick_marks, name_classes, rotation=90)
     plt.yticks(tick_marks, name_classes)
     plt.xlabel('Previsto')
     plt.ylabel('Verdadeiro')
@@ -100,19 +102,21 @@ def mtx_conf(confusion_mtx):
         plt.text(j, i, format(confusion_mtx[i, j], 'd'),
                  horizontalalignment="center",
                  color="white" if confusion_mtx[i, j] > thresh else "black")
+    
     plt.tight_layout()
     plt.show()
+
 
 # Função main
 def main():
     # Carrega o dataset
     train_dataset, test_dataset = load_dataset()
 
-    # Cria os dataloaders para treinamento e teste
+    # Dataloaders de treinamento e teste
     train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
     test_data = (test_dataset.data.transpose((0, 3, 1, 2)) / 255.0, np.array(test_dataset.targets))
 
-    # Mostra as informações sobre os dados
+    # Mostra dados de treinamento e teste
     num_train_samples = len(train_dataset)
     num_test_samples = len(test_dataset)
     print("Dados de treinamento:", num_train_samples)
