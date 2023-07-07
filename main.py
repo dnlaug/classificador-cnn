@@ -107,7 +107,7 @@ def mtx_conf(confusion_mtx):
     plt.show()
 
 
-# Função main
+# main
 def main():
     # Carrega o dataset
     train_dataset, test_dataset = load_dataset()
